@@ -11,82 +11,39 @@ def lambda_handler(event, context):
         })
     }
 
-
-s3->sns-.email
+# only sns 
 
 {
   "Version": "2012-10-17",
-  "Id": "example-ID",
   "Statement": [
     {
-      "Sid": "Example SNS topic policy",
       "Effect": "Allow",
-      "Principal": {
-        "Service": "s3.amazonaws.com"
-      },
-      "Action": [
-        "SNS:Publish"
-      ],
-      "Resource": "SNS topic ARN",
+      "Principal": {"Service": "s3.amazonaws.com"},
+      "Action": "SNS:Publish",
+      "Resource": "YOUR_SNS_ARN",
       "Condition": {
-        "ArnLike": {
-          "aws:SourceArn": "s3 bucket ARN"
-        },
-        "StringEquals": {
-          "aws:SourceAccount": "account id"
-        }
+        "ArnLike": {"aws:SourceArn": "YOUR_S3_BUCKET_ARN"},
+        "StringEquals": {"aws:SourceAccount": "YOUR_ACCOUNT_ID"}
       }
     }
   ]
 }
 
-# S3 Bucket Event → SNS → SQS → Lambda Processing
 
-in sQs
+s3->sns->sqs
+
 
 {
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "sns.amazonaws.com"
-      },
-      "Action": "sqs:SendMessage",
-      "Resource": "SQS ARN",
-      "Condition": {
-        "ArnEquals": {
-          "aws:SourceArn": "SNS ARN"
-        }
-      }
-    }
-  ]
+  "Effect": "Allow",
+  "Principal": {"Service": "sns.amazonaws.com"},
+  "Action": "sqs:SendMessage",
+  "Resource": "YOUR_SQS_ARN",
+  "Condition": {
+    "ArnEquals": {"aws:SourceArn": "YOUR_SNS_ARN"}
+  }
 }
-in sns
-{
-  "Version": "2012-10-17",
-  "Id": "example-ID",
-  "Statement": [
-    {
-      "Sid": "Example SNS topic policy",
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "s3.amazonaws.com"
-      },
-      "Action": [
-        "SNS:Publish"
-      ],
-      "Resource": "SNS topic ARN",
-      "Condition": {
-        "ArnLike": {
-          "aws:SourceArn": "S3 bucket ARN"
-        },
-        "StringEquals": {
-          "aws:SourceAccount": "Account ID"
-        }
-      }
-    }
-  ]
-}
+
+
 
 lambda
 
